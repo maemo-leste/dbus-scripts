@@ -1,0 +1,7 @@
+dbus-scripts for Debian
+-----------------------
+
+This program monitors the system dbus and whenever anything is seen it runs 
+all the scripts in the /etc/dbus-scripts.d directory.
+
+ -- Graham Cobb <g+770@cobb.uk.net>, Fri,  5 Jan 2007 23:09:05 +0000

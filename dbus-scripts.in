@@ -1,0 +1,13 @@
+description "dbus-scripts"
+author "Graham Cobb <g+770@cobb.uk.net>"
+
+start on started dbus
+start on started dbus-actdead
+stop on stopping dbus
+stop on stopping dbus-actdead
+
+console none
+
+exec /usr/sbin/dbus-scripts --system
+
+respawn

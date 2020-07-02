@@ -1,0 +1,16 @@
+Source: dbus-scripts
+Section: devel
+Priority: optional
+Maintainer: Matan Ziv-Av <matan@svgalib.org>
+Build-Depends: libdbus-1-dev, libglib2.0-dev, libdbus-glib-1-dev 
+Standards-Version: 3.6.1
+
+Package: dbus-scripts
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, dbus
+Description: Run scripts on system dbus activity
+ Allows other packages to run scripts on dbus signals.
+ .
+ Configuration files in /etc/dbus-scripts.d specify which
+ scripts should be invoked on which messages.
+

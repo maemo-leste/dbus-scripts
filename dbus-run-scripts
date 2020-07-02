@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Run the scripts from /etc/dbus-scripts.d
+#
+
+#
+# Create argument list
+#
+args=""
+for i
+do
+        args="$args -a \"$i\""
+done
+#echo args=$args
+#echo run-parts $args /etc/dbus-scripts.d
+
+alias dorun="run-parts $args /etc/dbus-scripts.d"
+dorun
