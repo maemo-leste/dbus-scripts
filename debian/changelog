@@ -1,3 +1,9 @@
+dbus-scripts (2.1) unstable; urgency=low
+
+  * Initial Maemo Leste import
+
+ -- Merlijn Wajer <merlijn@wizzup.org>  Fri, 03 Jul 2020 01:30:03 +0200
+
 dbus-scripts (2.0) unstable; urgency=low
 
   * Add V2 config, which includes D-Bus path, integer and boolean parameters.

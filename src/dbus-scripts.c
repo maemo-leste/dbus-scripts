@@ -505,8 +505,6 @@ main (int argc, char *argv[])
       }
     }
 
-  g_type_init();
-
   script_list = read_conf_dir(confdir);
   if (debug) g_slist_foreach(script_list, (GFunc)print_script_info, NULL);
 
