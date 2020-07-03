@@ -470,16 +470,17 @@ static void print_script_info(ScriptFile * obj) {
 
 static void usage(char *name, int ecode) {
 	fprintf(stderr,
-		"Usage: %s [--debug] [--system | --session] [--confdir <directory>] [watch expressions]\n",
+		"Usage: %s [--debug] [--system | --session | --system-and-session] [--confdir <directory>] [watch expressions]\n",
 		name);
 	exit(ecode);
 }
 
 int main(int argc, char *argv[]) {
-	DBusConnection *connection;
+	DBusConnection *connection[2];
 	DBusError error;
 	DBusBusType type = DBUS_BUS_SESSION;
 	GMainLoop *loop;
+	int both = 0;
 	int i = 0, j = 0, numFilters = 0;
 	char **filters = NULL;
 	char *confdir = DBUS_CONF_DIR;
@@ -493,6 +494,8 @@ int main(int argc, char *argv[]) {
 			type = DBUS_BUS_SYSTEM;
 		else if (!strcmp(arg, "--session"))
 			type = DBUS_BUS_SESSION;
+		else if (!strcmp(arg, "--system-and-session"))
+			both = 1;
 		else if (!strcmp(arg, "--debug"))
 			debug++;
 		else if (!strcmp(arg, "--confdir")) {
@@ -523,48 +526,82 @@ int main(int argc, char *argv[]) {
 	loop = g_main_loop_new(NULL, FALSE);
 
 	dbus_error_init(&error);
-	connection = dbus_bus_get(type, &error);
-	if (connection == NULL) {
-		fprintf(stderr,
-			"Failed to open connection to %s message bus: %s\n",
-			(type == DBUS_BUS_SYSTEM) ? "system" : "session",
-			error.message);
-		dbus_error_free(&error);
-		exit(1);
-	}
-
-	dbus_connection_setup_with_g_main(connection, NULL);
-
-	if (numFilters) {
-		for (i = 0; i < j; i++) {
-			dbus_bus_add_match(connection, filters[i], &error);
-			if (dbus_error_is_set(&error)) {
-				fprintf(stderr,
-					"Failed to setup match \"%s\": %s\n",
-					filters[i], error.message);
-				dbus_error_free(&error);
-				exit(1);
-			}
-			free(filters[i]);
+	if (both) {
+		dbus_error_init(&error);
+		connection[0] = dbus_bus_get(DBUS_BUS_SYSTEM, &error);
+		if (connection[0] == NULL) {
+			fprintf(stderr,
+				"Failed to open connection to %s message bus: %s\n",
+				"system", error.message);
+			dbus_error_free(&error);
+			exit(1);
 		}
+		connection[1] = dbus_bus_get(DBUS_BUS_SESSION, &error);
+		if (connection[1] == NULL) {
+			fprintf(stderr,
+				"Failed to open connection to %s message bus: %s\n",
+				"session", error.message);
+			dbus_error_free(&error);
+			exit(1);
+		}
+
 	} else {
-		dbus_bus_add_match(connection, "type='signal'", &error);
-		if (dbus_error_is_set(&error))
-			goto lose;
-		dbus_bus_add_match(connection, "type='method_call'", &error);
-		if (dbus_error_is_set(&error))
-			goto lose;
-		dbus_bus_add_match(connection, "type='method_return'", &error);
-		if (dbus_error_is_set(&error))
-			goto lose;
-		dbus_bus_add_match(connection, "type='error'", &error);
-		if (dbus_error_is_set(&error))
-			goto lose;
+		dbus_error_init(&error);
+		connection[0] = dbus_bus_get(type, &error);
+		if (connection[0] == NULL) {
+			fprintf(stderr,
+				"Failed to open connection to %s message bus: %s\n",
+				(type ==
+				 DBUS_BUS_SYSTEM) ? "system" : "session",
+				error.message);
+			dbus_error_free(&error);
+			exit(1);
+		}
 	}
 
-	if (!dbus_connection_add_filter(connection, filter_func, NULL, NULL)) {
-		fprintf(stderr, "Couldn't add filter!\n");
-		exit(1);
+	for (int k = 0; k < both + 1; k++) {
+		dbus_connection_setup_with_g_main(connection[k], NULL);
+	}
+
+	for (int k = 0; k < both + 1; k++) {
+		if (numFilters) {
+			for (i = 0; i < j; i++) {
+				dbus_bus_add_match(connection[k], filters[i],
+						   &error);
+				if (dbus_error_is_set(&error)) {
+					fprintf(stderr,
+						"Failed to setup match \"%s\": %s\n",
+						filters[i], error.message);
+					dbus_error_free(&error);
+					exit(1);
+				}
+                if (j == both)
+                    free(filters[i]);
+			}
+		} else {
+			dbus_bus_add_match(connection[k], "type='signal'",
+					   &error);
+			if (dbus_error_is_set(&error))
+				goto lose;
+			dbus_bus_add_match(connection[k], "type='method_call'",
+					   &error);
+			if (dbus_error_is_set(&error))
+				goto lose;
+			dbus_bus_add_match(connection[k],
+					   "type='method_return'", &error);
+			if (dbus_error_is_set(&error))
+				goto lose;
+			dbus_bus_add_match(connection[k], "type='error'",
+					   &error);
+			if (dbus_error_is_set(&error))
+				goto lose;
+		}
+
+		if (!dbus_connection_add_filter
+		    (connection[k], filter_func, NULL, NULL)) {
+			fprintf(stderr, "Couldn't add filter!\n");
+			exit(1);
+		}
 	}
 
 	g_main_loop_run(loop);
