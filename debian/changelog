@@ -1,6 +1,7 @@
 dbus-scripts (2.1) unstable; urgency=low
 
   * Initial Maemo Leste import
+  * Add OpenRC script
 
  -- Merlijn Wajer <merlijn@wizzup.org>  Fri, 03 Jul 2020 01:30:03 +0200
 

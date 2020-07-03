@@ -1,4 +1,4 @@
 SUBDIRS = src
 
-upstartdir = $(sysconfdir)/event.d
-upstart_DATA = dbus-scripts
+dbusscriptsdir = $(sysconfdir)/dbus-scripts.d
+dbusscripts_DATA = dbus-scripts-example
