@@ -2,7 +2,7 @@ Source: dbus-scripts
 Section: devel
 Priority: optional
 Maintainer: Merlijn Wajer <merlijn@wizzup.org>
-Build-Depends: libdbus-1-dev, libglib2.0-dev, libdbus-glib-1-dev
+Build-Depends: libdbus-1-dev, libglib2.0-dev, libdbus-glib-1-dev, debhelper (>= 10)
 Standards-Version: 4.3.0
 
 Package: dbus-scripts
