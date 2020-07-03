@@ -1,9 +1,9 @@
 Source: dbus-scripts
 Section: devel
 Priority: optional
-Maintainer: Matan Ziv-Av <matan@svgalib.org>
-Build-Depends: libdbus-1-dev, libglib2.0-dev, libdbus-glib-1-dev 
-Standards-Version: 3.6.1
+Maintainer: Merlijn Wajer <merlijn@wizzup.org>
+Build-Depends: libdbus-1-dev, libglib2.0-dev, libdbus-glib-1-dev
+Standards-Version: 4.3.0
 
 Package: dbus-scripts
 Architecture: any
